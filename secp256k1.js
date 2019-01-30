@@ -7,7 +7,7 @@ function sha256 (message) {
   return hash
 }
 
-function randomBytes (len) {
+function randomBytes (len, seed) {
   var rb = Buffer.alloc(len)
   sodium.randombytes_buf(rb)
   return rb
@@ -20,11 +20,22 @@ exports.curves = ['secp256k1']
 
 exports.generateKeys =
 exports.generate = function (seed) {
-  // TODO: handle seed
   let secretKey
-  do {
-    secretKey = randomBytes(32)
-  } while (!secp256k1.privateKeyVerify(secretKey))
+
+  if (seed) {
+    // TODO: not sure if this is the best way to handle a seed
+    secretKey = Buffer.alloc(32)
+    // do we need this?
+    sodium.randombytes_buf_deterministic(secretKey, seed)
+
+    while (!secp256k1.privateKeyVerify(secretKey)) {
+      secretKey = secp256k1.privateKeyTweakAdd(secretKey, seed)
+    }
+  } else {
+    do {
+      secretKey = randomBytes(32)
+    } while (!secp256k1.privateKeyVerify(secretKey))
+  }
 
   // public key is given in short form
   return {
