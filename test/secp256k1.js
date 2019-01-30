@@ -87,18 +87,17 @@ tape('sign and verify a hmaced object javascript object', function (t) {
 
 })
 
-// TODO
-// tape('seeded keys, ed25519', function (t) {
-//
-//   var seed = crypto.randomBytes(32)
-//   var k1 = ssbkeys.generate('ed25519', seed)
-//   var k2 = ssbkeys.generate('ed25519', seed)
-//
-//   t.deepEqual(k1, k2)
-//
-//   t.end()
-//
-// })
+tape('seeded keys, secp256k1', function (t) {
+
+  var seed = crypto.randomBytes(32)
+  var k1 = ssbkeys.generate('secp256k1', seed)
+  var k2 = ssbkeys.generate('secp256k1', seed)
+
+  t.deepEqual(k1, k2)
+
+  t.end()
+
+})
 
 tape('secp256k1 id === "@" ++ pubkey', function (t) {
 
