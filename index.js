@@ -75,18 +75,21 @@ var storage = require('./storage')(exports.generate)
 for(var key in storage) exports[key] = storage[key]
 
 
-exports.loadOrCreate = function (filename, cb) {
+exports.loadOrCreate = function (filename, curve, cb) {
+  if (isFunction(curve))
+    cb = curve, curve = null
+
   exports.load(filename, function (err, keys) {
     if(!err) return cb(null, keys)
-    exports.create(filename, cb)
+    exports.create(filename, curve, cb)
   })
 }
 
-exports.loadOrCreateSync = function (filename) {
+exports.loadOrCreateSync = function (filename, curve) {
   try {
     return exports.loadSync(filename)
   } catch (err) {
-    return exports.createSync(filename)
+    return exports.createSync(filename, curve)
   }
 }
 
