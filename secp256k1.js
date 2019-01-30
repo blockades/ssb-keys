@@ -39,8 +39,7 @@ exports.generate = function (seed) {
 
   // public key is given in short form
   return {
-    // secretKey,
-    // publicKey: secp256k1.publicKeyCreate(secretKey),
+    curve: 'secp256k1',
     private: secretKey,
     public: secp256k1.publicKeyCreate(secretKey)
   }
