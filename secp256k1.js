@@ -1,10 +1,9 @@
 const secp256k1 = require('secp256k1')
 const sodium = require('sodium-native')
+const keccak = require('keccak')
 
-function sha256 (message) {
-  var hash = Buffer.alloc(sodium.crypto_hash_sha256_BYTES)
-  sodium.crypto_hash_sha256(hash, message)
-  return hash
+function keccak256(message) {
+  return keccak('keccak256').update(message).digest()
 }
 
 function randomBytes (len, seed) {
@@ -46,13 +45,13 @@ exports.generate = function (seed) {
 }
 
 exports.sign = function (secretKey, message) {
-  const hash = sha256(message)
+  const hash = keccak256(message)
   // arguments are the other way around
   return secp256k1.sign(hash, secretKey).signature
 }
 
 exports.verify = function (publicKey, signature, message) {
-  const hash = sha256(message)
+  const hash = keccak256(message)
   // arguments are the other way around
   return secp256k1.verify(hash, signature, publicKey)
 }
