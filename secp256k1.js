@@ -2,7 +2,7 @@ const secp256k1 = require('secp256k1')
 const sodium = require('sodium-native')
 const keccak = require('keccak')
 
-function keccak256(message) {
+function keccak256 (message) {
   return keccak('keccak256').update(message).digest()
 }
 
@@ -22,9 +22,8 @@ exports.generate = function (seed) {
   let secretKey
 
   if (seed) {
-    // TODO: not sure if this is the best way to handle a seed
     secretKey = Buffer.alloc(32)
-    // do we need this?
+    // keeping this is under debate
     sodium.randombytes_buf_deterministic(secretKey, seed)
 
     while (!secp256k1.privateKeyVerify(secretKey)) {
