@@ -38,10 +38,10 @@ function isString(s) {
 
 var curves = {}
 curves.ed25519 = require('./sodium')
+curves.secp256k1 = require('./secp256k1')
 
 function getCurve(keys) {
   var curve = keys.curve
-
   if(!keys.curve && isString(keys.public))
     keys = keys.public
 
@@ -75,18 +75,21 @@ var storage = require('./storage')(exports.generate)
 for(var key in storage) exports[key] = storage[key]
 
 
-exports.loadOrCreate = function (filename, cb) {
+exports.loadOrCreate = function (filename, curve, cb) {
+  if (isFunction(curve))
+    cb = curve, curve = null
+
   exports.load(filename, function (err, keys) {
     if(!err) return cb(null, keys)
-    exports.create(filename, cb)
+    exports.create(filename, curve, cb)
   })
 }
 
-exports.loadOrCreateSync = function (filename) {
+exports.loadOrCreateSync = function (filename, curve) {
   try {
     return exports.loadSync(filename)
   } catch (err) {
-    return exports.createSync(filename)
+    return exports.createSync(filename, curve)
   }
 }
 
@@ -100,7 +103,6 @@ function sign (keys, msg) {
   if(!isBuffer(msg))
     throw new Error('msg should be buffer')
   var curve = getCurve(keys)
-
   return curves[curve]
     .sign(u.toBuffer(keys.private || keys), msg)
     .toString('base64')+'.sig.'+curve
